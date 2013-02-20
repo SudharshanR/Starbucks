@@ -1,0 +1,161 @@
+/**
+ * @author      Paul Nguyen
+ * @version     Starter
+ */
+public class AppController implements AppScreen 
+{
+    private AppScreen current;
+    private Pin thePin;
+    private Card currentCard;
+
+    /* screens */
+    private MyCardsMainScreen cardsMainScreen = new MyCardsMainScreen();
+    private MyCardsPayScreen cardsPayScreen = new MyCardsPayScreen();
+    private MyCardsOptionsScreen cardOptionsScreen = new MyCardsOptionsScreen();
+    private RewardScreen rewardScreen = new RewardScreen();
+    private FindStarbuckScreen findStarbucksScreen = new FindStarbuckScreen();
+    private PaymentScreen paymentScreen = new PaymentScreen();
+    private PinScreen pinScreen = new PinScreen();
+    private SettingScreen settingScreen = new SettingScreen();
+    private AddCardScreen addCardScreen = new AddCardScreen();
+    
+    /* commands */
+    private MenuCommand slot1 = new MenuCommand(cardsMainScreen);
+    private MenuCommand slot2 = new MenuCommand(paymentScreen);
+    private MenuCommand slot3 = new MenuCommand(rewardScreen);
+    private MenuCommand slot4 = new MenuCommand(findStarbucksScreen);
+    private MenuCommand slot5 = new MenuCommand(settingScreen);
+
+    private void configScreens()
+    {
+        this.cardsMainScreen.setOptionsScreen(this.cardOptionsScreen);
+        this.cardsPayScreen.setCardsMainScreen(this.cardsMainScreen);
+        this.cardOptionsScreen.setCardsMainScreen(this.cardsMainScreen);
+        this.cardsMainScreen.setCardsPayScreen(this.cardsPayScreen);
+        this.settingScreen.setAddCardScreen(this.addCardScreen);
+        this.addCardScreen.setCardsMainScreen(this.cardsMainScreen);
+        this.addCardScreen.setSettingsScreen(this.settingScreen);
+    }    
+
+    public void startUp() 
+    {
+        this.current = this.pinScreen;
+        this.thePin = STATIC_PIN;
+        this.currentCard = new Card();
+        configScreens() ;
+    }
+    
+    public Card getCurrentCard() 
+    {
+        return this.currentCard;
+    }
+    
+    public void setCurrentCard(Card newCard) 
+    {
+        this.currentCard = newCard;
+    }
+
+    /**
+     * Pass user's touch coordinates to current screen.
+     *
+     * @param x MouseX coordinate of the user input
+     * @param y MouseY coordinate of the user input
+     * @return void
+     */
+    public void touch(int x, int y) 
+    {
+        current.touch(x, y);
+        if ( thePin.isAuthenticated() &&  isCurrentScreenPinScreen() ) 
+        {
+          setScreen(cardsMainScreen);  
+        }
+    }
+    
+    /**
+     * Display current screen's graphical content.
+     *
+     * @return void
+     */
+    public void display() 
+    {
+        current.display();
+    }
+    
+    /**
+     * Perform actions if topLeftCmd button pressed.
+     *
+     * @return void
+     */
+    public void topLeftCmd() {
+        if (!thePin.isAuthenticated())
+            /* do nothing */ ;
+        else
+            this.current.topLeftCmd();
+    }
+
+    /**
+     * Perform actions if topRightCmd button pressed.
+     *
+     * @return void
+     */
+    public void topRightCmd() {
+        if (!thePin.isAuthenticated())
+            /* do nothing */ ;
+        else
+            this.current.topRightCmd();
+    }
+    
+    public void setScreen(AppScreen screen) {
+        this.current = screen;
+    }
+    
+    public String getCurrentScreenName()
+    {
+        return current.getClass().getName() ;
+    }
+
+    private boolean isCurrentScreenPinScreen() {
+        return current.getClass().getName().endsWith("PinScreen");
+    }
+
+    public void menu1() {
+        if (!thePin.isAuthenticated())
+            // do nothing 
+            ;
+        else
+            slot1.execute();
+    }
+
+    public void menu2() {
+        if (!thePin.isAuthenticated())
+            // do nothing 
+            ;
+        else
+            slot2.execute();
+    }
+
+    public void menu3() {
+        if (!thePin.isAuthenticated())
+            // do nothing 
+             ;
+        else
+            slot3.execute();
+    }
+
+    public void menu4() {
+        if (!thePin.isAuthenticated())
+            //
+            ;
+        else
+            slot4.execute();
+    }
+
+    public void menu5() {
+        if (!thePin.isAuthenticated())
+            // 
+            ;
+        else
+            slot5.execute();
+    }
+}
+
